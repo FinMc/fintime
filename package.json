@@ -1,0 +1,16 @@
+{
+  "name": "@fin-time/root",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/**"
+    ]
+  },
+  "devDependencies": {
+    "lerna": "^6.6.1",
+    "craco": "^0.0.3"
+  },
+  "scripts": {
+    "start": "lerna exec --scope @fin-time/main-app -- yarn start"
+  }
+}
