@@ -1,0 +1,19 @@
+.searchResults {
+    max-height: 300px;
+    max-width: 500px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.parent {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+
+.guesses {
+    min-width: 500px;
+    max-width: 500px;
+    width: unset;
+}
