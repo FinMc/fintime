@@ -14,8 +14,10 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  ListItemButton
+  ListItemButton,
+  IconButton
 } from '@mui/material'
+import PlayCircleFilledSharpIcon from '@mui/icons-material/PlayCircle'
 import './App.css'
 import { result } from './fakeQuery'
 
@@ -80,10 +82,10 @@ function App() {
         </Table>
       </TableContainer>
 
-      <div className="Music">
-        <Button variant="outlined" onClick={handlePlay}>
-          Play
-        </Button>
+      <div className="music">
+        <IconButton onClick={handlePlay}>
+          <PlayCircleFilledSharpIcon />
+        </IconButton>
       </div>
 
       <div className="searchBox">
@@ -102,29 +104,31 @@ function App() {
       </div>
 
       <div className="searchResults">
-        <List>
-          {searchResults.map((track) => (
-            <ListItemButton
-              key={track.id}
-              onClick={() =>
-                handleSelection(
-                  `${track.name} - ${track.artists[0].name}`,
-                  track.uri
-                )
-              }
-            >
-              <ListItemAvatar>
-                <Avatar
-                  alt={track.album.name}
-                  src={track.album.images[2].url}
+        {searchResults.length > 0 && (
+          <List>
+            {searchResults.map((track) => (
+              <ListItemButton
+                key={track.id}
+                onClick={() =>
+                  handleSelection(
+                    `${track.name} - ${track.artists[0].name}`,
+                    track.uri
+                  )
+                }
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    alt={track.album.name}
+                    src={track.album.images[2].url}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={`${track.name} - ${track.artists[0].name}`}
                 />
-              </ListItemAvatar>
-              <ListItemText
-                primary={`${track.name} - ${track.artists[0].name}`}
-              />
-            </ListItemButton>
-          ))}
-        </List>
+              </ListItemButton>
+            ))}
+          </List>
+        )}
       </div>
     </div>
   )

@@ -17,3 +17,12 @@
     max-width: 500px;
     width: unset;
 }
+
+.music button {
+    width: 80px;
+    height: 80px;
+}
+
+.music svg {
+    transform: scale(3);
+}
