@@ -15,7 +15,9 @@ import {
   TableRow,
   TableCell,
   ListItemButton,
-  IconButton
+  IconButton,
+  LinearProgress,
+  Box
 } from '@mui/material'
 import PlayCircleFilledSharpIcon from '@mui/icons-material/PlayCircle'
 import './App.css'
@@ -26,65 +28,97 @@ const spotifyApi = new SpotifyWebApi()
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [searches, setSearches] = useState([])
-  const song = new Audio(result[0].preview_url)
-  const song_id = result[0].uri
+  const [searches, setSearches] = useState(['', '', '', '', ''])
+  const [searchNum, setSearchNum] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [play, setPlay] = useState(false)
+  const songNum = Math.ceil(
+    Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
+  )
+  const song = new Audio(result[songNum % (result.length-1)].preview_url)
+  const song_id = result[songNum % (result.length-1)].uri
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const access_token = await getAuth()
-  //     spotifyApi.setAccessToken(access_token)
-  //   }
-  //   fetchData()
-  // }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      const access_token = await getAuth()
+      spotifyApi.setAccessToken(access_token)
+    }
+    fetchData()
+  }, [])
 
   const handleSelection = (val, uri) => {
-    // const { tracks } = await spotifyApi.searchTracks(searchTerm)
     if (uri === song_id) {
       alert('You win')
-      return
-    } else if (searches.length >= 4) {
+    } else if (searchNum >= 4) {
       alert('You lose')
-      setSearches([])
+      setSearches(['', '', '', '', ''])
+      return
     } else {
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches.push(val)
+        tempSearches[searchNum] = val
         return tempSearches
       })
+      setSearchNum(searchNum + 1)
     }
   }
 
-  const handleSearch = async () => {
-    // const { tracks } = await spotifyApi.searchTracks(searchTerm)
-    const tracks = result
-    setSearchResults(result)
+  const handleSearch = async (s) => {
+    setSearchTerm(s)
+    const { tracks } = await spotifyApi.searchTracks(s, {limit: 10})
+    console.log(tracks)
+    // const tracks = result
+    setSearchResults(tracks.items)
   }
 
   const handlePlay = async () => {
+    if (play) return
+    setPlay(true)
+    const timer = [1, 2, 5, 10, 15][searchNum]
+    setProgress(0)
     song.play()
-    await new Promise((res) => setTimeout(res, 1000))
+    let percent = 0
+    while (percent < (timer / 15) * 100) {
+      await new Promise((res) => setTimeout(res, 150))
+      percent += 1
+      setProgress((cur) => cur + 1)
+    }
     song.pause()
     song.currentTime = 0
+    setPlay(false)
+    setProgress((timer / 15) * 100)
   }
 
   return (
     <div className="parent">
-      <TableContainer className="guesses">
-        <Table>
+      <TableContainer className="guessesParent">
+        <Table className="guesses">
           <TableBody>
             {searches.map((row, index) => (
               <TableRow key={index}>
-                <TableCell>{row}</TableCell>
+                <TableCell>{row != '' ? '❌' + row : ''}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
+      <div className="progress">
+        <Box sx={{ width: '500px', height: '20px' }} className="bar">
+          <LinearProgress
+            variant="buffer"
+            value={progress}
+            valueBuffer={([1, 2, 5, 10, 15][searchNum] / 15) * 100}
+            sx={{ height: '20px' }}
+            color="success"
+          />
+        </Box>
+        <div className="progressVal">{(progress / 6.66666).toFixed(2)}s</div>
+      </div>
+
       <div className="music">
         <IconButton onClick={handlePlay}>
-          <PlayCircleFilledSharpIcon />
+          <PlayCircleFilledSharpIcon color="success" />
         </IconButton>
       </div>
 
@@ -93,15 +127,15 @@ function App() {
           id="outlined-basic"
           variant="outlined"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
         />
       </div>
 
-      <div className="searchButton">
+      {/* <div className="searchButton">
         <Button variant="outlined" onClick={handleSearch}>
           Search
         </Button>
-      </div>
+      </div> */}
 
       <div className="searchResults">
         {searchResults.length > 0 && (

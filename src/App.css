@@ -1,6 +1,6 @@
 .searchResults {
     max-height: 300px;
-    max-width: 500px;
+    width: 500px;
     overflow: scroll;
     overflow-x: hidden;
 }
@@ -12,10 +12,27 @@
     flex-direction: column;
 }
 
+.guessesParent {
+    width: unset;
+}
+
 .guesses {
     min-width: 500px;
     max-width: 500px;
-    width: unset;
+    height: 400px;
+}
+
+.progressVal {
+    text-align: center;
+}
+
+.progress {
+    align-items: center;
+}
+
+.bar {
+    border-style: solid;
+    border-width: 2px;
 }
 
 .music button {
@@ -25,4 +42,17 @@
 
 .music svg {
     transform: scale(3);
+}
+
+.MuiLinearProgress-bar {
+    transition: transform .151s linear
+}
+
+.MuiLinearProgress-dashed {
+    display: none
+}
+
+.MuiLinearProgress-bar2Buffer {
+    border-right: solid;
+    border-width: 2px
 }
