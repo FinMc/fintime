@@ -32,11 +32,12 @@ function App() {
   const [searchNum, setSearchNum] = useState(0)
   const [progress, setProgress] = useState(0)
   const [play, setPlay] = useState(false)
+  const [win, setWin] = useState(false)
   const songNum = Math.ceil(
     Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
   )
-  const song = new Audio(result[songNum % (result.length-1)].preview_url)
-  const song_id = result[songNum % (result.length-1)].uri
+  const song = new Audio(result[songNum % (result.length - 1)].preview_url)
+  const song_id = result[songNum % (result.length - 1)].uri
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,8 +48,15 @@ function App() {
   }, [])
 
   const handleSelection = (val, uri) => {
+    if (win) return
     if (uri === song_id) {
       alert('You win')
+      setWin(true)
+      setSearches((cur) => {
+        const tempSearches = [...cur]
+        tempSearches[searchNum] = '✅' + val
+        return tempSearches
+      })
     } else if (searchNum >= 4) {
       alert('You lose')
       setSearches(['', '', '', '', ''])
@@ -56,7 +64,7 @@ function App() {
     } else {
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches[searchNum] = val
+        tempSearches[searchNum] = '❌' + val
         return tempSearches
       })
       setSearchNum(searchNum + 1)
@@ -64,8 +72,9 @@ function App() {
   }
 
   const handleSearch = async (s) => {
+    if (win) return
     setSearchTerm(s)
-    const { tracks } = await spotifyApi.searchTracks(s, {limit: 10})
+    const { tracks } = await spotifyApi.searchTracks(s, { limit: 10 })
     console.log(tracks)
     // const tracks = result
     setSearchResults(tracks.items)
@@ -96,7 +105,7 @@ function App() {
           <TableBody>
             {searches.map((row, index) => (
               <TableRow key={index}>
-                <TableCell>{row != '' ? '❌' + row : ''}</TableCell>
+                <TableCell>{row}</TableCell>
               </TableRow>
             ))}
           </TableBody>
