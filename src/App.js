@@ -33,11 +33,10 @@ function App() {
   const [progress, setProgress] = useState(0)
   const [play, setPlay] = useState(false)
   const [win, setWin] = useState(false)
-  const songNum = Math.ceil(
+  const songData = result[Math.ceil(
     Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
-  )
-  const song = new Audio(result[songNum % (result.length - 1)].preview_url)
-  const song_id = result[songNum % (result.length - 1)].uri
+  ) % (result.length - 1)]
+  const song = new Audio(songData.preview_url)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,9 +46,9 @@ function App() {
     fetchData()
   }, [])
 
-  const handleSelection = (val, uri) => {
+  const handleSelection = (val, name, artist) => {
     if (win) return
-    if (uri === song_id) {
+    if (songData.name == name && songData.artists[0].name == artist) {
       alert('You win')
       setWin(true)
       setSearches((cur) => {
@@ -155,7 +154,7 @@ function App() {
                 onClick={() =>
                   handleSelection(
                     `${track.name} - ${track.artists[0].name}`,
-                    track.uri
+                    track.name, track.artists[0].name
                   )
                 }
               >
