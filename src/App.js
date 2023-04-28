@@ -33,9 +33,13 @@ function App() {
   const [progress, setProgress] = useState(0)
   const [play, setPlay] = useState(false)
   const [finished, setFinished] = useState(false)
-  const songData = result[Math.ceil(
-    Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
-  ) % (result.length - 1)]
+  const songData =
+    result[
+      Math.ceil(
+        Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
+      ) %
+        (result.length - 1)
+    ]
   const song = new Audio(songData.preview_url)
 
   useEffect(() => {
@@ -53,26 +57,29 @@ function App() {
       setFinished(true)
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches[searchNum] = '🍑' + val
+        tempSearches[searchNum] = '🍑 ' + val
         return tempSearches
       })
       return
-    } else if (songData.artists[0].name == name) {
+    } else if (songData.artists[0].name == artist) {
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches[searchNum] = '🔥' + val
+        tempSearches[searchNum] = '🔥 ' + val
         return tempSearches
       })
       setSearchNum(searchNum + 1)
     } else {
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches[searchNum] = '💩' + val
+        tempSearches[searchNum] = '💩 ' + val
         return tempSearches
       })
       setSearchNum(searchNum + 1)
     }
-    if (searchNum >= 4) alert("You lose")
+    if (searchNum >= 4) {
+      alert('You lose')
+      setFinished(true)
+    }
   }
 
   const handleSearch = async (s) => {
@@ -159,7 +166,8 @@ function App() {
                 onClick={() =>
                   handleSelection(
                     `${track.name} - ${track.artists[0].name}`,
-                    track.name, track.artists[0].name
+                    track.name,
+                    track.artists[0].name
                   )
                 }
               >
