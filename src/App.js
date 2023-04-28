@@ -32,7 +32,7 @@ function App() {
   const [searchNum, setSearchNum] = useState(0)
   const [progress, setProgress] = useState(0)
   const [play, setPlay] = useState(false)
-  const [win, setWin] = useState(false)
+  const [finished, setFinished] = useState(false)
   const songData = result[Math.ceil(
     Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
   ) % (result.length - 1)]
@@ -47,31 +47,36 @@ function App() {
   }, [])
 
   const handleSelection = (val, name, artist) => {
-    if (win) return
+    if (finished) return
     if (songData.name == name && songData.artists[0].name == artist) {
       alert('You win')
-      setWin(true)
+      setFinished(true)
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches[searchNum] = '✅' + val
+        tempSearches[searchNum] = '🍑' + val
         return tempSearches
       })
-    } else if (searchNum >= 4) {
-      alert('You lose')
-      setSearches(['', '', '', '', ''])
       return
+    } else if (songData.artists[0].name == name) {
+      setSearches((cur) => {
+        const tempSearches = [...cur]
+        tempSearches[searchNum] = '🔥' + val
+        return tempSearches
+      })
+      setSearchNum(searchNum + 1)
     } else {
       setSearches((cur) => {
         const tempSearches = [...cur]
-        tempSearches[searchNum] = '❌' + val
+        tempSearches[searchNum] = '💩' + val
         return tempSearches
       })
       setSearchNum(searchNum + 1)
     }
+    if (searchNum >= 4) alert("You lose")
   }
 
   const handleSearch = async (s) => {
-    if (win) return
+    if (finished) return
     setSearchTerm(s)
     const { tracks } = await spotifyApi.searchTracks(s, { limit: 10 })
     console.log(tracks)
