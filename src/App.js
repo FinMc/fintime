@@ -17,14 +17,21 @@ import {
   ListItemButton,
   IconButton,
   LinearProgress,
-  Box
+  Box,
+  Modal
 } from '@mui/material'
 import PlayCircleFilledSharpIcon from '@mui/icons-material/PlayCircle'
 import './App.css'
 import { result } from './fakeQuery'
+import { hash, hashFunc } from './hash'
 
 const spotifyApi = new SpotifyWebApi()
-
+/*
+Winning screen
+Save progress
+Stats
+Fix audio playback
+*/
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -33,13 +40,14 @@ function App() {
   const [progress, setProgress] = useState(0)
   const [play, setPlay] = useState(false)
   const [finished, setFinished] = useState(false)
-  const songData =
-    result[
+  const songDigit =
+    hash[
       Math.ceil(
         Math.abs(new Date('04/26/2023') - Date.now()) / (1000 * 60 * 60 * 24)
       ) %
         (result.length - 1)
     ]
+  const songData = result[songDigit]
   const song = new Audio(songData.preview_url)
 
   useEffect(() => {
@@ -52,16 +60,23 @@ function App() {
 
   const handleSelection = (val, name, artist) => {
     if (finished) return
-    if (songData.name == name && songData.artists[0].name == artist) {
-      alert('You win')
+    if (
+      hashFunc(songData.name) == hashFunc(name) &&
+      songData.artist == artist
+    ) {
       setFinished(true)
+      setSearchTerm('')
+      setSearchResults([])
       setSearches((cur) => {
         const tempSearches = [...cur]
         tempSearches[searchNum] = '🍑 ' + val
         return tempSearches
       })
+      alert('You win')
       return
-    } else if (songData.artists[0].name == artist) {
+    } else if (songData.artist == artist) {
+      setSearchTerm('')
+      setSearchResults([])
       setSearches((cur) => {
         const tempSearches = [...cur]
         tempSearches[searchNum] = '🔥 ' + val
@@ -69,6 +84,8 @@ function App() {
       })
       setSearchNum(searchNum + 1)
     } else {
+      setSearchTerm('')
+      setSearchResults([])
       setSearches((cur) => {
         const tempSearches = [...cur]
         tempSearches[searchNum] = '💩 ' + val
@@ -77,7 +94,7 @@ function App() {
       setSearchNum(searchNum + 1)
     }
     if (searchNum >= 4) {
-      alert('You lose')
+      alert(`You lose, the song was: ${songData.name} - ${songData.artist}`)
       setFinished(true)
     }
   }
@@ -92,7 +109,12 @@ function App() {
   }
 
   const handlePlay = async () => {
-    if (play) return
+    if (play) {
+      song.pause()
+      song.currentTime = 0
+      setPlay(false)
+      return
+    }
     setPlay(true)
     const timer = [1, 2, 5, 10, 15][searchNum]
     setProgress(0)
